@@ -5,7 +5,12 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "GUEST")
-public class Guest extends AbstractIdentified{
+@NamedQueries(
+        @NamedQuery(name = "guestFind",
+                query = "select g from Guest g where guestName=:guestName and " +
+                        "guestSurname=:guestSurname "))
+
+public class Guest extends AbstractIdentified {
 
     @Column(name = "GUEST_NAME")
     private String guestName;
@@ -14,7 +19,6 @@ public class Guest extends AbstractIdentified{
     private String guestSurname;
 
     @ManyToOne
-    @JoinColumn(name = "ROOMS")
     private Rooms rooms;
 
     public Guest() {

@@ -6,19 +6,16 @@
 
     <persistence-unit name="mysql">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-    <properties>
-        <property name="javax.persistence.driver" value="com.mysql.jdbc.Driver" />
-        <property name="javax.persistence.url" value="jdbc:mysql://localhost:3306/proba" />
+        <properties>
+            <property name="javax.persistence.driver" value="com.mysql.jdbc.Driver"/>
+            <property name="javax.persistence.url" value="jdbc:mysql://localhost:3306/proba"/>
 
-        <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL57Dialect" />
-        <property name="hibernate.show_sql" value="true" />
-        <property name="hibernate.hbm2ddl.auto" value="create" />
-        <property name="hibernate.archive.autodetection" value="class"/>
-        <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/proba"/>
-        <property name="hibernate.connection.username" value="root" />
-
-    </properties>
-
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL57Dialect"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.hbm2ddl.auto" value="create"/>
+            <property name="hibernate.archive.autodetection" value="class"/>
+            <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/proba"/>
+            <property name="hibernate.connection.username" value="root"/>
+        </properties>
     </persistence-unit>
-
 </persistence>
