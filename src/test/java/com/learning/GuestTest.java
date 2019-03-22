@@ -6,18 +6,14 @@ import com.learning.domain.RoomTypes;
 import com.learning.domain.Rooms;
 import org.junit.*;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.LockModeType;
-import javax.persistence.Persistence;
-import java.util.ArrayList;
-import java.util.List;
-
+import javax.persistence.*;
+import java.util.*;
 
 public class GuestTest {
 
     private static EntityManagerFactory entityManagerFactory;
     private EntityManager entityManager;
+    //private List<Rooms> data = new ArrayList<>();
 
     @BeforeClass
     public static void start() {
@@ -26,6 +22,7 @@ public class GuestTest {
 
     @Before
     public void before() {
+        System.out.println("Start before");
         entityManager = entityManagerFactory.createEntityManager();
         Rooms room = new Rooms();
         room.setRoomTypes(RoomTypes.STANDART);
@@ -37,22 +34,39 @@ public class GuestTest {
         room.setGuest(guests);
         entityManager.getTransaction().begin();
         entityManager.persist(room);
+        entityManager.getTransaction().commit();
+        //data.add(room);
+        System.out.println("End before");
     }
 
     @After
     public void after() {
-        entityManager.close();
+        System.out.println("Start after");
+        entityManager.getTransaction().begin();
+        //data.forEach(room -> entityManager.remove(room));
+
+        List<Rooms> roomsFromDb = entityManager.createNativeQuery("select * from ROOMS", Rooms.class).getResultList();
+
+        for (Rooms room : roomsFromDb) {
+            entityManager.remove(room);
+        }
+
+        entityManager.getTransaction().commit();
+
+        Assert.assertTrue(entityManager.createNativeQuery("select * from ROOMS").getResultList().isEmpty());
+        Assert.assertTrue(entityManager.createNativeQuery("select * from GUEST").getResultList().isEmpty());
+        System.out.println("End after");
     }
 
     @Test
-    public void getAllGuests() {
+    public void testGetAllGuests() {
         List<Guest> guest1 = entityManager.createNativeQuery("select * from GUEST").getResultList();
         Assert.assertEquals(3, guest1.size());
     }
 
 
     @Test
-    public void getGuest() {
+    public void testGetGuest() {
         List<Guest> guest1 = entityManager.createNamedQuery("guestFind", Guest.class)
                 .setParameter("guestName", "Petr")
                 .setParameter("guestSurname", "Petrov")
@@ -62,7 +76,7 @@ public class GuestTest {
     }
 
     @Test
-    public void getGuestNotHave() {
+    public void testGetGuestNotHave() {
         List<Guest> guest1 = entityManager.createNamedQuery("guestFind", Guest.class)
                 .setParameter("guestName", "Roman")
                 .setParameter("guestSurname", "Romanov")
@@ -72,7 +86,7 @@ public class GuestTest {
     }
 
     @Test
-    public void updateGuestData() {
+    public void testUpdateGuestData() {
         Guest guest2 = entityManager.createNamedQuery("guestFind", Guest.class)
                 .setParameter("guestName", "Ivan")
                 .setParameter("guestSurname", "Ivanov")
@@ -85,7 +99,7 @@ public class GuestTest {
     }
 
     @Test
-    public void addGuest() {
+    public void testAddGuest() {
         List<Guest> guest1 = entityManager.createNativeQuery("select * from GUEST").getResultList();
         Assert.assertEquals(3, guest1.size());
         Rooms room = new Rooms();
@@ -97,7 +111,7 @@ public class GuestTest {
     }
 
     @Test
-    public void deleteGuest() {
+    public void testDeleteGuest() {
         List<Guest> guests = entityManager.createNativeQuery("select * from GUEST").getResultList();
         Assert.assertEquals(3, guests.size());
         guests.remove(0);
@@ -105,14 +119,16 @@ public class GuestTest {
     }
 
     @Test
-    public void lockingGuest() {
+    public void testLockingGuest() {
         Guest guest1 = entityManager.createNamedQuery("guestFind", Guest.class)
                 .setParameter("guestName", "Ivan")
                 .setParameter("guestSurname", "Ivanov")
                 .getSingleResult();
 
         Assert.assertEquals(1, guest1.getVersion());
+        entityManager.getTransaction().begin();
         entityManager.lock(guest1, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+        entityManager.getTransaction().commit();
         Assert.assertEquals(2, guest1.getVersion());
     }
 

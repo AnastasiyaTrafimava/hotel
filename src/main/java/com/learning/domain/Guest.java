@@ -25,9 +25,6 @@ public class Guest extends AbstractIdentified {
     @Column(name = "VERSION")
     private int version;
 
-    public Guest() {
-    }
-
     public String getGuestName() {
         return guestName;
     }

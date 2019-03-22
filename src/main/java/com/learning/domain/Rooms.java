@@ -17,11 +17,8 @@ public class Rooms extends AbstractIdentified{
     @Column(name = "ROOM_TYPES")
     private RoomTypes roomTypes;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "rooms", cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "rooms", cascade = CascadeType.ALL)
     private List<Guest> guest = new ArrayList<>();
-
-    public Rooms() {
-    }
 
     public RoomStatus getRoomStatus() {
         return roomStatus;
